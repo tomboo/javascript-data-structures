@@ -1,14 +1,19 @@
 import React from "react";
 import "./styles.css";
 import Tree from "./tree";
+import FileExplorer from "./components/FileExplorer/FileExplorer";
 
 export default function App() {
   const tree = testTree();
 
   return (
     <div className="App">
+      <FileExplorer />
+      
+      {/* 
       <h1>Tree</h1>
       { tree.toString() }
+      */}
     </div>
   );
 }
