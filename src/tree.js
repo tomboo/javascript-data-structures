@@ -7,6 +7,7 @@ function nextID() {
   return _nextID.toString();
 }
 
+//
 class Node {
   constructor(name) {
     this.gid = nextID();
@@ -15,11 +16,13 @@ class Node {
   }
 }
 
+//
 class Tree {
   constructor() {
     this.datastore = {};
   }
 
+  //
   toString() {
     return (
       <div style={{ whiteSpace: "pre-wrap", textAlign: "left" }}>
@@ -28,6 +31,7 @@ class Tree {
     );
   }
 
+  //
   addChild(parent=null) {
     const child = new Node();
     this.datastore[child.gid] = child;
@@ -40,14 +44,39 @@ class Tree {
     return child;
   }
 
+  //
   getRootNodes() {
     return values(this.datastore).filter(node => node.isRoot === true);
   };
 
+  //
   getChildNodes(node) {
-    if (!node.children) return [];
+    if (this.isLeaf(node)) return [];
     return node.children.map(gid => this.datastore[gid]);
   };
+
+  //
+  getLabel(node) {
+    return (node.name);
+  };
+
+  //
+  isLeaf(node) {
+    return (!node.children || node.children.length === 0);
+  }
+
+  //
+  preOrder(node, level=0) {
+    if (node !== null) {
+      console.log(level, this.getLabel(node));
+
+      ++level;
+      let childNodes = this.getChildNodes(node);
+      for (let i = 0; i < childNodes.length; i++) {
+        this.preOrder(childNodes[i], level);
+      }
+    }
+  }
 }
 
 export default Tree;

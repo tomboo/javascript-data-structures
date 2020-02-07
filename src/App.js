@@ -21,17 +21,20 @@ function testTree() {
   let parent;
 
   root = tree.addChild();       // 1
-  tree.addChild(root);          // 2
 
-  parent = tree.addChild(root); // 3
-  tree.addChild(parent);        // 4
+  parent = tree.addChild(root); // 2
+  tree.addChild(parent);        // 3
+
+  parent = tree.addChild(root); // 4
   tree.addChild(parent);        // 5
+  tree.addChild(parent);        // 6
 
   root = tree.addChild();       // 7
   tree.addChild(root);          // 8
 
-  console.log(tree.getRootNodes());
-  console.log(tree.getChildNodes(parent));
+  const roots = tree.getRootNodes();
+  root = roots[0];
+  tree.preOrder(root);
 
   return tree;
 }
