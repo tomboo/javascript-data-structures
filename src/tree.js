@@ -1,5 +1,6 @@
 import React from "react";
-import values from "lodash/values";
+// import values from "lodash/values";
+import { stringify } from "./utilities"
 
 let _nextID = 0;
 function nextID() {
@@ -10,60 +11,104 @@ function nextID() {
 //
 class Node {
   constructor(name) {
-    this.gid = nextID();
-    this.name = name ? name : this.gid;
-    this.children = [];
+    this.id = nextID();
+    this.name = name ? name : this.id;
   }
 }
 
 //
 class Tree {
   constructor() {
-    this.datastore = {};
-  }
+    // datastore
+    this.baseID = '';
+    this.nodes = {};  // TODO: This could be implemented as array if you don't need to delete nodes
+    this._addBase();
+  };
+
+  //
+  _addBase() {
+    const baseNode = new Node('base');
+    this.baseID = baseNode.id;
+    this.nodes[this.baseID] = baseNode;
+  };
+
+  //
+  _getBase() {
+    return this.nodes[this.baseID];
+  };
 
   //
   toString() {
     return (
-      <div style={{ whiteSpace: "pre-wrap", textAlign: "left" }}>
-        { JSON.stringify(this.datastore, null, "\t") }
-      </div>    
+      <React.Fragment>
+        { stringify(this) }
+      </React.Fragment>
     );
-  }
+  };
 
   //
-  addChild(parent=null) {
-    const child = new Node();
-    this.datastore[child.gid] = child;
-    if (!parent) {    // addRoot
-      child.isRoot = true;
-    }
-    else {
-      parent.children.push(child.gid);
-    }
+  addRoot() {
+    let child = this.addChild(this._getBase());
+    child.name = 'root';    // TODO: not required
+    child.isRoot = true;    // TODO: not required
+    this.nodes[child.id] = child;
     return child;
-  }
+  };
+
+  //
+  addChild(parent) {
+    const child = new Node();
+    this.nodes[child.id] = child;
+    if (!parent.children) {
+      parent.children = [];
+    }
+    parent.children.push(child.id);
+    return child;
+  };
 
   //
   getRootNodes() {
-    return values(this.datastore).filter(node => node.isRoot === true);
+    return this.getChildNodes(this._getBase());
   };
+
+  /*
+  // Get last root. Typicslly used if only one root.
+  getRoot() {
+    const n = this.getChildCount(this._getBase());
+    if (n > 0) {
+      return this.nodes[this.roots[n - 1]];
+    }
+    else {
+      return null;
+    }
+  }
+  */
 
   //
   getChildNodes(node) {
     if (this.isLeaf(node)) return [];
-    return node.children.map(gid => this.datastore[gid]);
+    return node.children.map(id => this.nodes[id]);
+  };
+
+  //
+  isLeaf(node) {
+    return ( this.getChildCount(node) === 0 );
+  };
+
+  //
+  getChildCount(node) {
+    if (node.children) {
+      return node.children.length;
+    }
+    else {
+      return 0;
+    }
   };
 
   //
   getLabel(node) {
     return (node.name);
   };
-
-  //
-  isLeaf(node) {
-    return (!node.children || node.children.length === 0);
-  }
 
   //
   preOrder(node, level=0) {

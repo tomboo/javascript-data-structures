@@ -5,12 +5,14 @@
   "keywords": [],
   "main": "src/index.js",
   "dependencies": {
+    "immer": "5.3.4",
     "lodash": "4.17.15",
     "react": "16.12.0",
     "react-dom": "16.12.0",
     "react-icons": "3.9.0",
     "react-scripts": "3.0.1",
-    "styled-components": "5.0.1"
+    "styled-components": "5.0.1",
+    "use-immer": "0.3.5"
   },
   "devDependencies": {
     "typescript": "3.3.3"

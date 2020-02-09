@@ -1,16 +1,16 @@
 import React from "react";
 import "./styles.css";
-import Tree from "./tree";
+// import Tree from "./tree";
 import FileExplorer from "./components/FileExplorer/FileExplorer";
 
 export default function App() {
-  const tree = testTree();
+  // const tree = testTree();
 
   return (
     <div className="App">
       <FileExplorer />
-      
-      {/* 
+
+      {/*
       <h1>Tree</h1>
       { tree.toString() }
       */}
@@ -19,27 +19,27 @@ export default function App() {
 }
 
 
-
+/*
 function testTree() {
   let tree = new Tree();
-  let root;
+  let root1;
+  let root2;
   let parent;
 
-  root = tree.addChild();       // 1
+  root1 = tree.addRoot();       // 1 (first root)
 
-  parent = tree.addChild(root); // 2
+  parent = tree.addChild(root1); // 2
   tree.addChild(parent);        // 3
-
-  parent = tree.addChild(root); // 4
+  
+  parent = tree.addChild(root1); // 4
   tree.addChild(parent);        // 5
   tree.addChild(parent);        // 6
 
-  root = tree.addChild();       // 7
-  tree.addChild(root);          // 8
+  root2 = tree.addRoot();       // 7 (second root)
+  tree.addChild(root2);          // 8
 
-  const roots = tree.getRootNodes();
-  root = roots[0];
-  tree.preOrder(root);
+  tree.preOrder(root1);
 
   return tree;
 }
+*/

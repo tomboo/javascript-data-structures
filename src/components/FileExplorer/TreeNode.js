@@ -1,8 +1,8 @@
 import React from "react";
 import {
-  FaFile,
-  FaFolder,
-  FaFolderOpen,
+  // FaFile,
+  // FaFolder,
+  // FaFolderOpen,
   FaChevronDown,
   FaChevronRight
 } from "react-icons/fa";

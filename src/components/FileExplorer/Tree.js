@@ -1,51 +1,71 @@
 import React from "react";
-import { useState } from "react";
-import values from "lodash/values";
+// import { useState } from "react";
+// import values from "lodash/values";
 import PropTypes from "prop-types";
 
 import TreeNode from "./TreeNode";
-import { mock_data } from "./mock-data";
+// import { mock_data } from "./mock-data";
+
+import treeView from "../../tree"
+// import { stringify } from "../../utilities"
+import {useImmer} from "use-immer";
+
+
+// construct treeView
+function buildView() {
+  const view = new treeView();
+  const root = view.addRoot();
+  let parent;
+  parent = view.addChild(root);
+  view.addChild(parent);
+  parent = view.addChild(root);
+  view.addChild(parent);
+  view.addChild(parent);
+  // console.log('view', view);
+  return view;
+}
 
 // Tree Component
 function Tree(props) {
-  console.log('Tree');
-  console.log(props);
-  const [nodes, setNodes] = useState(mock_data.view);
+  // console.log('Tree');
+  // console.log(props);
+  // const [root, setRoot] = useState(null);
+  const [view, setView] = useImmer(buildView());
 
-  function getRootNodes() {
-    return values(nodes).filter(node => node.isRoot === true);
-  };
-
+  // callback
   function getChildNodes(node) {
-    if (!node.children) return [];
-    return node.children.map(gid => nodes[gid]);
-  };
+    console.log('getChildNodes', node);
+    
+    return view.getChildNodes(node);
+  }
 
-  function onToggle(node) {
-    let newNode = {...node};
-    newNode.isOpen = !newNode.isOpen;    
-    setNodes({
-      ...nodes,
-      [node.gid]: newNode
-    });
-  };
-
+  // callback
   function onNodeSelect (node) {
+    console.log('onNodeSelect', node);
+    
     const { onSelect } = props;
     onSelect(node);
   };
 
-  const rootNodes = getRootNodes();
+  // callback
+  function onToggle(node) {
+    console.log('onToggle', node.isOpen);
 
+    setView(draft => {
+      draft.nodes[node.id].isOpen = !node.isOpen;
+    });
+  }
+
+  const rootNodes = view.getRootNodes();
   return (
-    <div>
+    <div> 
       {rootNodes.map(node => (
         <TreeNode
-          key={node.gid}
+          key={node.id}
           node={node}
           getChildNodes={getChildNodes}
-          onToggle={onToggle}
           onNodeSelect={onNodeSelect}
+          onToggle={onToggle}
         />
       ))}
     </div>
