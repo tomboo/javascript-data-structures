@@ -9,11 +9,11 @@ import {
 import styled from "styled-components";
 // import last from 'lodash/last';
 import PropTypes from "prop-types";
-import { ResourceType } from "./mock-data";
+// import { ResourceType } from "./mock-data";
 
 const getPaddingLeft = (level, type) => {
   let paddingLeft = level * 20;
-  if (type === ResourceType.TASK) paddingLeft += 20;
+  // if (type === ResourceType.TASK) paddingLeft += 20;
   return paddingLeft;
 };
 
@@ -37,6 +37,7 @@ function getNodeLabel(node) {
   return node.name;
 }
 
+
 // TreeNode Component
 function TreeNode(props) {
   console.log('TreeNode');
@@ -48,8 +49,8 @@ function TreeNode(props) {
       <StyledTreeNode level={level} type={node.resource_type}>
         {/* Node open/closed icon (clickable) */}
         <NodeIcon onClick={() => onToggle(node)}>
-          {node.resource_type !== ResourceType.TASK &&
-            (node.isOpen ? <FaChevronDown /> : <FaChevronRight />)}
+          {/* {node.resource_type !== ResourceType.TASK && */}
+            {(node.isOpen ? <FaChevronDown /> : <FaChevronRight />)}
         </NodeIcon>
 
         {/* Node Label (selectable) */}
@@ -63,7 +64,7 @@ function TreeNode(props) {
         getChildNodes(node).map(childNode => (
           <TreeNode
             {...props}
-            key={childNode.gid}
+            key={childNode.id}
             node={childNode}
             level={level + 1}
           />

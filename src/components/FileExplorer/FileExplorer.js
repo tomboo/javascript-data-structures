@@ -2,7 +2,7 @@ import React from "react";
 import { useState } from "react";
 import styled from "styled-components";
 import Tree from "./Tree";
-import { mock_data } from "./mock-data";
+// import { mock_data } from "./mock-data";
 import { stringify } from "../../utilities";
 
 const StyledFileExplorer = styled.div`
@@ -31,8 +31,10 @@ function FileExplorer() {
       <div>
         <h2>Node Info</h2>
         {stringify(selectedNode)}
+        {/* 
         <h2>Node Details</h2>
-        {stringify(mock_data.items[selectedNode.gid])}
+        {stringify(mock_data.items[selectedNode.id])}
+        */}
       </div>
     );
   } else {
