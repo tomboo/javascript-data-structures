@@ -1,51 +1,42 @@
 import React from "react";
+import {useImmer} from "use-immer";
 // import { useState } from "react";
 // import values from "lodash/values";
 import PropTypes from "prop-types";
-
 import TreeNode from "./TreeNode";
-// import { mock_data } from "./mock-data";
-
 import treeView from "../../tree"
 // import { stringify } from "../../utilities"
-import {useImmer} from "use-immer";
 
 
 // construct treeView
 function buildView() {
   const view = new treeView();
-  const root = view.addRoot();
-  let parent;
-  parent = view.addChild(root);
-  view.addChild(parent);
-  parent = view.addChild(root);
-  view.addChild(parent);
-  view.addChild(parent);
+  const root = view.addRoot();  // 2  (root)
+  root.isOpen = true;
+  // let parent;
+  view.addChild(root);          // 3
+  view.addChild(root);          // 4
+  // view.addChild(parent);
+  // parent = view.addChild(root);
+  // view.addChild(parent);
+  // view.addChild(parent);
   // console.log('view', view);
   return view;
 }
 
 // Tree Component
+//
 function Tree(props) {
-  // console.log('Tree');
-  // console.log(props);
-  // const [root, setRoot] = useState(null);
   const [view, setView] = useImmer(buildView());
+  console.log('Tree');
+  console.log('props', props);
+  console.log('view', view);
 
   // callback
   function getChildNodes(node) {
-    console.log('getChildNodes', node);
-    
+    console.log('getChildNodes', node);   
     return view.getChildNodes(node);
   }
-
-  // callback
-  function onNodeSelect (node) {
-    console.log('onNodeSelect', node);
-    
-    const { onSelect } = props;
-    onSelect(node);
-  };
 
   // callback
   function onToggle(node) {
@@ -64,7 +55,7 @@ function Tree(props) {
           key={node.id}
           node={node}
           getChildNodes={getChildNodes}
-          onNodeSelect={onNodeSelect}
+          onSelect={() => props.onSelect(node)}
           onToggle={onToggle}
         />
       ))}

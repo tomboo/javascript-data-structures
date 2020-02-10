@@ -40,33 +40,36 @@ function getNodeLabel(node) {
 
 // TreeNode Component
 function TreeNode(props) {
+  const { node, getChildNodes, level, onToggle, onSelect } = props;
   console.log('TreeNode');
-  console.log(props);
-  const { node, getChildNodes, level, onToggle, onNodeSelect } = props;
+  console.log('props', props);
 
   return (
     <React.Fragment>
       <StyledTreeNode level={level} type={node.resource_type}>
+
         {/* Node open/closed icon (clickable) */}
         <NodeIcon onClick={() => onToggle(node)}>
-          {/* {node.resource_type !== ResourceType.TASK && */}
+            {level}
             {(node.isOpen ? <FaChevronDown /> : <FaChevronRight />)}
         </NodeIcon>
 
         {/* Node Label (selectable) */}
-        <span role="button" onClick={() => onNodeSelect(node)}>
+        <button onClick={onSelect}>
           {getNodeLabel(node)}
-        </span>
+        </button>
       </StyledTreeNode>
 
       {/* Children */}
       {node.isOpen &&
-        getChildNodes(node).map(childNode => (
+        props.getChildNodes(node).map(childNode => (
           <TreeNode
-            {...props}
             key={childNode.id}
             node={childNode}
+            getChildNodes={getChildNodes}
             level={level + 1}
+            onToggle={onToggle}
+            onSelect={() => onSelect(childNode)}
           />
         ))}
     </React.Fragment>
@@ -78,7 +81,7 @@ TreeNode.propTypes = {
   getChildNodes: PropTypes.func.isRequired,
   level: PropTypes.number.isRequired,
   onToggle: PropTypes.func.isRequired,
-  onNodeSelect: PropTypes.func.isRequired
+  onSelect: PropTypes.func.isRequired
 };
 
 TreeNode.defaultProps = {

@@ -1,5 +1,6 @@
 import React from "react";
 import { useState } from "react";
+// import {useImmer} from "use-immer";
 import styled from "styled-components";
 import Tree from "./Tree";
 // import { mock_data } from "./mock-data";
@@ -17,19 +18,24 @@ const TreeWrapper = styled.div`
 `;
 
 // FileExplorer Component
+//
 function FileExplorer() {
   const [selectedNode, setSelectedNode] = useState(null);
+  console.log('FileExplorer');
+  console.log('selectedNode', selectedNode);
 
-  function onSelect(node) {
-    return setSelectedNode(node);
+  // callback
+  function handleSelect(node) {
+    console.log('handleSelect', node);
+    setSelectedNode(node);
+    console.log('selectedNode', selectedNode);
   }
 
   // TODO: Research util.inspect()
-  let nodeDetail;
+  let nodeDetail = <div>no selection</div>;
   if (selectedNode) {
     nodeDetail = (
       <div>
-        <h2>Node Info</h2>
         {stringify(selectedNode)}
         {/* 
         <h2>Node Details</h2>
@@ -37,16 +43,25 @@ function FileExplorer() {
         */}
       </div>
     );
-  } else {
-    nodeDetail = <div>empty</div>;
   }
 
   return (
     <StyledFileExplorer>
-      <TreeWrapper>
-        <Tree onSelect={onSelect} />
-      </TreeWrapper>
-      <div>{selectedNode && nodeDetail}</div>
+      {/* Left pane */}
+      <div>
+        <h3>Tree</h3>
+        <hr />
+          <TreeWrapper>
+            <Tree onSelect={(node) => handleSelect(node)} />
+          </TreeWrapper>
+      </div>
+
+      {/* Right pane */}
+      <div>
+        <h3>Node Info</h3>
+        <hr />
+        { nodeDetail }
+      </div>
     </StyledFileExplorer>
   );
 }
