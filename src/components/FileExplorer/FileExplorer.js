@@ -1,4 +1,7 @@
 import React from "react";
+import {useImmerReducer } from "use-immer";
+import { _initialState, reducer } from "./store"
+
 import { useState } from "react";
 // import {useImmer} from "use-immer";
 import styled from "styled-components";
@@ -23,6 +26,8 @@ function FileExplorer() {
   const [selectedNode, setSelectedNode] = useState(null);
   console.log('FileExplorer');
   console.log('selectedNode', selectedNode);
+  const initialState = _initialState();
+  const [state, dispatch] = useImmerReducer(reducer, initialState);
 
   // callback
   function handleSelect(node) {
@@ -44,6 +49,12 @@ function FileExplorer() {
       </div>
     );
   }
+
+  nodeDetail = (
+    <div>
+      {stringify(state)}
+    </div>
+  );
 
   return (
     <StyledFileExplorer>
