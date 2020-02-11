@@ -54,6 +54,7 @@ function Tree(props) {
         <TreeNode
           key={node.id}
           node={node}
+          level={0}
           getChildNodes={getChildNodes}
           onSelect={() => props.onSelect(node)}
           onToggle={onToggle}

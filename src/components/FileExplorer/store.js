@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import {useImmerReducer } from "use-immer";
+import { useImmerReducer } from "use-immer";
 
 const ADD_ROOT = "ADD_ROOT";
 const ADD_CHILD = "ADD_CHILD";
@@ -23,31 +23,30 @@ class Node {
 
   //
   _isLeaf() {
-    return ( this._getChildCount() === 0 );
-  };
+    return this._getChildCount() === 0;
+  }
 
   //
   _getChildCount() {
     if (this.children) {
       return this.children.length;
-    }
-    else {
+    } else {
       return 0;
     }
-  };
+  }
 }
 
 //
 export function _initialState() {
-  const baseNode = new Node('base');
+  const baseNode = new Node("base");
 
   const tree = {
     baseID: baseNode.id,
     selectID: baseNode.id,
     nodes: {
-      [baseNode.id]: baseNode,
-    },
-  }
+      [baseNode.id]: baseNode
+    }
+  };
 
   let root = _addRoot(tree);
   _addChild(tree, root);
@@ -63,11 +62,12 @@ function _getBase(tree) {
 //
 function _addRoot(tree) {
   let child = _addChild(tree, _getBase(tree));
-  child.name = 'root';    // TODO: not required
-  child.isRoot = true;    // TODO: not required
+  child.name = "root"; // TODO: not required
+  child.isRoot = true; // TODO: not required
   tree.nodes[child.id] = child;
+  tree.selectID = child.id;
   return child;
-};
+}
 
 //
 function _addChild(tree, parentNode) {
@@ -78,73 +78,70 @@ function _addChild(tree, parentNode) {
   }
   parentNode.children.push(child.id);
   return child;
-};
+}
 
 //
 function _getRootNodes(tree) {
   return tree._getChildNodes(tree._getBase());
-};
+}
 
 //
 function _getChildNodes(tree, node) {
   if (node._isLeaf()) return [];
   return node.children.map(id => tree.nodes[id]);
-};
-
-
-
+}
 
 // Action Creators
 //
 function addRoot() {
-  return ({
+  return {
     type: ADD_ROOT
-  })
+  };
 }
 
 export function addChild(parentNode) {
-  return ({
+  return {
     type: ADD_CHILD,
     parentNode
-  })
+  };
 }
 
 function getChildNodes(node) {
-  return ({
+  return {
     type: GET_CHILD_NODES,
     node
-  })
+  };
 }
 
 function toggleNode(node) {
-  return ({
+  return {
     type: TOGGLE_NODE,
     node
-  })
+  };
 }
 
 function selectNode(node) {
-  return ({
+  return {
     type: SELECT_NODE,
     node
-  })
+  };
 }
 
 // Reducers
 //
 export const reducer = (draft, action) => {
- switch (action.type) {
+  switch (action.type) {
     case ADD_ROOT:
       _addRoot(draft);
       return;
-/*
+    /*
     case CLEAR_LIST:
       return _initialState();
 */
     default:
       return draft;
   }
-}
+};
 
 /*
 export default combineReducers({

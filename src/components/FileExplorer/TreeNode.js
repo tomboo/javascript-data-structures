@@ -37,51 +37,49 @@ function getNodeLabel(node) {
   return node.name;
 }
 
-
 // TreeNode Component
 function TreeNode(props) {
   const { node, getChildNodes, level, onToggle, onSelect } = props;
-  console.log('TreeNode');
-  console.log('props', props);
+  console.log("TreeNode");
+  console.log("props", props);
 
   return (
     <React.Fragment>
       <StyledTreeNode level={level} type={node.resource_type}>
-
         {/* Node open/closed icon (clickable) */}
         <NodeIcon onClick={() => onToggle(node)}>
-            {level}
-            {(node.isOpen ? <FaChevronDown /> : <FaChevronRight />)}
+          {level}
+          {node.isOpen ? <FaChevronDown /> : <FaChevronRight />}
         </NodeIcon>
 
         {/* Node Label (selectable) */}
-        <button onClick={onSelect}>
-          {getNodeLabel(node)}
-        </button>
+        <button onClick={onSelect}>{getNodeLabel(node)}</button>
       </StyledTreeNode>
 
       {/* Children */}
       {node.isOpen &&
-        props.getChildNodes(node).map(childNode => (
-          <TreeNode
-            key={childNode.id}
-            node={childNode}
-            getChildNodes={getChildNodes}
-            level={level + 1}
-            onToggle={onToggle}
-            onSelect={() => onSelect(childNode)}
-          />
-        ))}
+        props
+          .getChildNodes(node)
+          .map(childNode => (
+            <TreeNode
+              key={childNode.id}
+              node={childNode}
+              level={level + 1}
+              getChildNodes={getChildNodes}
+              onSelect={() => onSelect(childNode)}
+              onToggle={onToggle}
+            />
+          ))}
     </React.Fragment>
   );
 }
 
 TreeNode.propTypes = {
   node: PropTypes.object.isRequired,
-  getChildNodes: PropTypes.func.isRequired,
   level: PropTypes.number.isRequired,
-  onToggle: PropTypes.func.isRequired,
-  onSelect: PropTypes.func.isRequired
+  getChildNodes: PropTypes.func.isRequired,
+  onSelect: PropTypes.func.isRequired,
+  onToggle: PropTypes.func.isRequired
 };
 
 TreeNode.defaultProps = {
