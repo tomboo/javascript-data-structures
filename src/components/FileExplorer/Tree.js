@@ -1,71 +1,66 @@
 import React from "react";
-import {useImmer} from "use-immer";
+import { connect } from "react-redux";
+
+// import {useImmer} from "use-immer";
 // import { useState } from "react";
 // import values from "lodash/values";
 import PropTypes from "prop-types";
 import TreeNode from "./TreeNode";
-import treeView from "../../tree"
+//import treeView from "../../tree"
 // import { stringify } from "../../utilities"
-
-
-// construct treeView
-function buildView() {
-  const view = new treeView();
-  const root = view.addRoot();  // 2  (root)
-  root.isOpen = true;
-  // let parent;
-  view.addChild(root);          // 3
-  view.addChild(root);          // 4
-  // view.addChild(parent);
-  // parent = view.addChild(root);
-  // view.addChild(parent);
-  // view.addChild(parent);
-  // console.log('view', view);
-  return view;
-}
+import { _getRootNodes, _getChildNodes } from "./store";
+import { selectNode, toggleNode } from "./store";
 
 // Tree Component
 //
 function Tree(props) {
-  const [view, setView] = useImmer(buildView());
-  console.log('Tree');
-  console.log('props', props);
-  console.log('view', view);
+  // const [view, setView] = useImmer(buildView());
+  console.log("Tree");
+  console.log("props", props);
+  // console.log('view', view);
 
-  // callback
-  function getChildNodes(node) {
-    console.log('getChildNodes', node);   
-    return view.getChildNodes(node);
+  function renderNode(node, level) {
+    return (
+      <TreeNode
+        key={node.id}
+        node={node}
+        level={level}
+        onSelect={props.selectNode(node.id)}
+        onToggle={props.toggleNode(node)}
+      />
+    );
   }
 
-  // callback
-  function onToggle(node) {
-    console.log('onToggle', node.isOpen);
-
-    setView(draft => {
-      draft.nodes[node.id].isOpen = !node.isOpen;
-    });
+  function traverse(tree, node, level = 0) {
+    return (
+      <div>
+        {renderNode(node, level)}
+        {node.isOpen &&
+          _getChildNodes(tree, node).map(childNode =>
+            traverse(tree, childNode, level + 1)
+          )}
+      </div>
+    );
   }
 
-  const rootNodes = view.getRootNodes();
-  return (
-    <div> 
-      {rootNodes.map(node => (
-        <TreeNode
-          key={node.id}
-          node={node}
-          level={0}
-          getChildNodes={getChildNodes}
-          onSelect={() => props.onSelect(node)}
-          onToggle={onToggle}
-        />
-      ))}
-    </div>
-  );
+  const rootNodes = _getRootNodes(props.state);
+  return <div>{rootNodes.map(node => traverse(props.state, node))}</div>;
 }
 
 Tree.propTypes = {
   onSelect: PropTypes.func.isRequired
 };
 
-export default Tree;
+const mapStateToProps = state => ({
+  state: state // getVisibleTodos(state.todos, state.visibilityFilter)
+});
+
+const mapDispatchToProps = dispatch => ({
+  selectNode: id => dispatch(selectNode(id)),
+  toggleNode: id => dispatch(toggleNode(id))
+});
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Tree);

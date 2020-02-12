@@ -55,21 +55,6 @@ function TreeNode(props) {
         {/* Node Label (selectable) */}
         <button onClick={onSelect}>{getNodeLabel(node)}</button>
       </StyledTreeNode>
-
-      {/* Children */}
-      {node.isOpen &&
-        props
-          .getChildNodes(node)
-          .map(childNode => (
-            <TreeNode
-              key={childNode.id}
-              node={childNode}
-              level={level + 1}
-              getChildNodes={getChildNodes}
-              onSelect={() => onSelect(childNode)}
-              onToggle={onToggle}
-            />
-          ))}
     </React.Fragment>
   );
 }

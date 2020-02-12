@@ -49,6 +49,7 @@ export function _initialState() {
   };
 
   let root = _addRoot(tree);
+  root.isOpen = true;
   _addChild(tree, root);
   _addChild(tree, root);
   return tree;
@@ -81,15 +82,19 @@ function _addChild(tree, parentNode) {
 }
 
 //
-function _getRootNodes(tree) {
+export function _getRootNodes(tree) {
   return tree._getChildNodes(tree._getBase());
 }
 
 //
-function _getChildNodes(tree, node) {
+export function _getChildNodes(tree, node) {
   if (node._isLeaf()) return [];
   return node.children.map(id => tree.nodes[id]);
 }
+
+
+
+
 
 // Action Creators
 //
@@ -113,17 +118,17 @@ function getChildNodes(node) {
   };
 }
 
-function toggleNode(node) {
+export function toggleNode(id) {
   return {
     type: TOGGLE_NODE,
-    node
+    id
   };
 }
 
-function selectNode(node) {
+export function selectNode(id) {
   return {
     type: SELECT_NODE,
-    node
+    id
   };
 }
 
@@ -134,10 +139,17 @@ export const reducer = (draft, action) => {
     case ADD_ROOT:
       _addRoot(draft);
       return;
+    case SELECT_NODE:
+      draft.selectID = action.id;
+      return;
+    case TOGGLE_NODE:
+      draft.nodes[action.id].isOpen = !draft.nodes[action.id].isOpen;
+      return;
+
     /*
     case CLEAR_LIST:
       return _initialState();
-*/
+    */
     default:
       return draft;
   }
