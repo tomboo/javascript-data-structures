@@ -5,8 +5,8 @@ import PropTypes from "prop-types";
 import TreeNode from "./TreeNode";
 //import treeView from "../../tree"
 // import { stringify } from "../../utilities"
-import { _getRootNodes, _getChildNodes } from "./store";
-import { selectNode, toggleNode } from "./store";
+import { _getRootNodes, _getChildNodes } from "../../store";
+import { selectNode, toggleNode } from "../../store";
 
 // Tree Component
 //

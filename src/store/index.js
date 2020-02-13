@@ -2,7 +2,7 @@ import { createStore, applyMiddleware } from 'redux'
 import thunk from 'redux-thunk'
 import { createLogger } from 'redux-logger'
 import produce from 'immer'
-import { stringify } from "../../utilities";
+import { stringify } from "../utilities";
 
 const CLEAR_LIST = "CLEAR_LIST";
 const ADD_ROOT = "ADD_ROOT";
