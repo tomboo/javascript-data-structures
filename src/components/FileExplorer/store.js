@@ -157,7 +157,10 @@ const reducer = (state = _initialState(), action) =>
         draft.selectID = action.nodeID;
         break;
       case TOGGLE_NODE:
+        console.log(draft.nodes[action.nodeID].isOpen);
         draft.nodes[action.nodeID].isOpen = !draft.nodes[action.nodeID].isOpen;
+        draft.selectID = action.nodeID;
+        console.log(draft.nodes[action.nodeID].isOpen);
         break;
       default:
         break;

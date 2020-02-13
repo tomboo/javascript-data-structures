@@ -1,12 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
-// import {useImmerReducer } from "use-immer";
-
 import styled from "styled-components";
 import Tree from "./Tree";
-import { stringify } from "../../utilities";
-// import { _initialState, reducer } from "./store"
-
 
 
 const StyledFileExplorer = styled.div`
@@ -43,12 +38,13 @@ function FileExplorer(props) {
     );
   }
 
-  // TODO: remove temporary
+  /*
   nodeDetail = (
     <div>
       {stringify(props)}
     </div>
   );
+  */
 
   return (
     <StyledFileExplorer>

@@ -39,7 +39,7 @@ function getNodeLabel(node) {
 
 // TreeNode Component
 function TreeNode(props) {
-  const { node, level, onSelect, onToggle } = props;
+  const { node, level, selected, onSelect, onToggle } = props;
   console.log("TreeNode");
   console.log(props);
 
@@ -56,6 +56,8 @@ function TreeNode(props) {
         <button onClick={onSelect}>
           {getNodeLabel(node)}
         </button>
+
+        {selected && <span>*</span>}
       </StyledTreeNode>
     </React.Fragment>
   );

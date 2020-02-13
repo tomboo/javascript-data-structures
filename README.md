@@ -5,4 +5,6 @@ JavaScript: Data Structures
 - Book: Data Structures & Algorithms with Java Script, Michael McMillan
 
 ## Technology Stack
-- Immmer
+- React
+- Redux
+- Immer

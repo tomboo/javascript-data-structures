@@ -1,8 +1,5 @@
 import React from "react";
 import { connect } from "react-redux";
-
-// import {useImmer} from "use-immer";
-// import { useState } from "react";
 // import values from "lodash/values";
 import PropTypes from "prop-types";
 import TreeNode from "./TreeNode";
@@ -18,12 +15,13 @@ function Tree(props) {
   console.log("Tree");
   console.log(props);
 
-  function renderNode(node, level) {
+  function renderNode(node, level, selected) {
     return (
       <TreeNode
         key={node.id}
         node={node}
         level={level}
+        selected={selected}
         onSelect={() => props.selectNode(node.id)}
         onToggle={() => props.toggleNode(node.id)}
       />
@@ -35,7 +33,7 @@ function Tree(props) {
     return (
       <div>
         {/* Render node */}
-        {renderNode(node, level)}
+        {renderNode(node, level, node.id === tree.selectID)}
 
         {/* Render children (recursive call) */}
         {node.isOpen &&
