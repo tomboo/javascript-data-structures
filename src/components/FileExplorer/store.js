@@ -1,8 +1,7 @@
-import React from "react";
 import { createStore, applyMiddleware } from 'redux'
 import thunk from 'redux-thunk'
 import { createLogger } from 'redux-logger'
-import { useImmerReducer } from "use-immer";
+import produce from 'immer'
 import { stringify } from "../../utilities";
 
 const CLEAR_LIST = "CLEAR_LIST";
@@ -73,12 +72,12 @@ function _getBase(tree) {
 
 //
 function _addRoot(tree) {
-  let child = _addChild(tree, _getBase(tree));
-  child.name = "root"; // TODO: not required
-  child.isRoot = true; // TODO: not required
-  tree.nodes[child.id] = child;
-  tree.selectID = child.id;
-  return child;
+  let root = _addChild(tree, _getBase(tree));
+  root.name = "root"; // TODO: not required
+  root.isRoot = true; // TODO: not required
+  //tree.nodes[root.id] = root;
+  tree.selectID = root.id;
+  return root;
 }
 
 //
@@ -139,28 +138,33 @@ export function toggleNode(nodeID) {
 //
 // Reducers
 //
-export const reducer = (draft, action) => {
-  switch (action.type) {    
-    case CLEAR_LIST:
-      draft = _initialState();
-      break;
-    case ADD_ROOT:
-      _addRoot(draft);
-      break;
-    case ADD_CHILD:
-      _addChild(draft);
-      break;
-    case SELECT_NODE:
-      draft.selectID = action.nodeID;
-      break;
-    case TOGGLE_NODE:
-      draft.nodes[action.nodeID].isOpen = !draft.nodes[action.nodeID].isOpen;
-      break;
-    default:
-      break;
+const reducer = (state = _initialState(), action) => 
+  produce(state, draft => {
+    switch (action.type) {    
+      case CLEAR_LIST:
+        draft = _initialState();
+        break;
+      case ADD_ROOT:
+        _addRoot(draft);
+        break;
+      case ADD_CHILD:
+        _addChild(draft);
+        break;
+      case SELECT_NODE:
+        // TODO: assert nodeID is a valid id
+        // TODO: seems inefficient to copy entire tree to set selection
+        // TODO: consider separate state for selectID
+        draft.selectID = action.nodeID;
+        break;
+      case TOGGLE_NODE:
+        draft.nodes[action.nodeID].isOpen = !draft.nodes[action.nodeID].isOpen;
+        break;
+      default:
+        break;
+    }
+    return draft;
   }
-  return draft;
-};
+)
 
 //
 // Store
@@ -173,7 +177,6 @@ export function generateStore() {
 
   return createStore(
     reducer,
-    _initialState(),
     applyMiddleware(...middleware),
   ); 
 }

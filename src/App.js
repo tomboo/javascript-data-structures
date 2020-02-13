@@ -8,9 +8,10 @@ import { generateStore } from "./components/FileExplorer/store"
 //
 function App() {
   console.log('App');
-
   const store = generateStore();
+  console.log(store);
   console.log(store.getState());
+  
   return (
     <Provider store={store}>
       <div className="App">
