@@ -1,12 +1,15 @@
-import React, { useRef } from "react";
+import React from "react";
+import { createStore, applyMiddleware } from 'redux'
+import thunk from 'redux-thunk'
+import { createLogger } from 'redux-logger'
 import { useImmerReducer } from "use-immer";
+import { stringify } from "../../utilities";
 
+const CLEAR_LIST = "CLEAR_LIST";
 const ADD_ROOT = "ADD_ROOT";
 const ADD_CHILD = "ADD_CHILD";
 const SELECT_NODE = "SELECT";
 const TOGGLE_NODE = "TOGGLE";
-const GET_ROOT_NODES = "GET_ROOT_NODES";
-const GET_CHILD_NODES = "GET_CHILD_NODES";
 
 let _nextID = 0;
 function nextID() {
@@ -14,11 +17,17 @@ function nextID() {
   return _nextID.toString();
 }
 
-//
+
+// Node Class
 class Node {
   constructor(name) {
     this.id = nextID();
     this.name = name ? name : this.id;
+  }
+
+  //
+  toString() {
+    return stringify(this);
   }
 
   //
@@ -36,7 +45,8 @@ class Node {
   }
 }
 
-//
+
+// Tree Class
 export function _initialState() {
   const baseNode = new Node("base");
 
@@ -52,6 +62,7 @@ export function _initialState() {
   root.isOpen = true;
   _addChild(tree, root);
   _addChild(tree, root);
+
   return tree;
 }
 
@@ -83,7 +94,7 @@ function _addChild(tree, parentNode) {
 
 //
 export function _getRootNodes(tree) {
-  return tree._getChildNodes(tree._getBase());
+  return _getChildNodes(tree, _getBase(tree));
 }
 
 //
@@ -93,72 +104,76 @@ export function _getChildNodes(tree, node) {
 }
 
 
-
-
-
+//
 // Action Creators
 //
-function addRoot() {
+export function addRoot() {
   return {
     type: ADD_ROOT
   };
 }
 
-export function addChild(parentNode) {
+export function addChild(parentID) {
   return {
     type: ADD_CHILD,
-    parentNode
+    parentID
   };
 }
 
-function getChildNodes(node) {
-  return {
-    type: GET_CHILD_NODES,
-    node
-  };
-}
-
-export function toggleNode(id) {
-  return {
-    type: TOGGLE_NODE,
-    id
-  };
-}
-
-export function selectNode(id) {
+export function selectNode(nodeID) {
+  console.log('selectNode', nodeID);
   return {
     type: SELECT_NODE,
-    id
+    nodeID
   };
 }
 
+export function toggleNode(nodeID) {
+  console.log('toggleNode', nodeID);
+  return {
+    type: TOGGLE_NODE,
+    nodeID
+  };
+}
+
+//
 // Reducers
 //
 export const reducer = (draft, action) => {
-  switch (action.type) {
+  switch (action.type) {    
+    case CLEAR_LIST:
+      draft = _initialState();
+      break;
     case ADD_ROOT:
       _addRoot(draft);
-      return;
+      break;
+    case ADD_CHILD:
+      _addChild(draft);
+      break;
     case SELECT_NODE:
-      draft.selectID = action.id;
-      return;
+      draft.selectID = action.nodeID;
+      break;
     case TOGGLE_NODE:
-      draft.nodes[action.id].isOpen = !draft.nodes[action.id].isOpen;
-      return;
-
-    /*
-    case CLEAR_LIST:
-      return _initialState();
-    */
+      draft.nodes[action.nodeID].isOpen = !draft.nodes[action.nodeID].isOpen;
+      break;
     default:
-      return draft;
+      break;
   }
+  return draft;
 };
 
-/*
-export default combineReducers({
-  nodes,
-  root,
-  select,
-})
-*/
+//
+// Store
+//
+export function generateStore() {
+  const middleware = [ thunk ];
+  if (process.env.NODE_ENV !== 'production') {
+    middleware.push(createLogger());
+  }
+
+  return createStore(
+    reducer,
+    _initialState(),
+    applyMiddleware(...middleware),
+  ); 
+}

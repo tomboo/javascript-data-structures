@@ -1,13 +1,11 @@
 import React from "react";
-import {useImmerReducer } from "use-immer";
-import { _initialState, reducer } from "./store"
+import { connect } from "react-redux";
+// import {useImmerReducer } from "use-immer";
 
-import { useState } from "react";
-// import {useImmer} from "use-immer";
 import styled from "styled-components";
 import Tree from "./Tree";
-// import { mock_data } from "./mock-data";
 import { stringify } from "../../utilities";
+// import { _initialState, reducer } from "./store"
 
 
 
@@ -24,26 +22,19 @@ const TreeWrapper = styled.div`
 
 // FileExplorer Component
 //
-function FileExplorer() {
-  const [selectedNode, setSelectedNode] = useState(null);
+function FileExplorer(props) {
   console.log('FileExplorer');
-  console.log('selectedNode', selectedNode);
-  const initialState = _initialState();
-  const [state, dispatch] = useImmerReducer(reducer, initialState);
+  console.log(props);
 
-  // callback
-  function handleSelect(node) {
-    console.log('handleSelect', node);
-    setSelectedNode(node);
-    console.log('selectedNode', selectedNode);
-  }
+  //const initialState = _initialState();
+  //const [state, dispatch] = useImmerReducer(reducer, initialState);
 
   // TODO: Research util.inspect()
   let nodeDetail = <div>no selection</div>;
-  if (selectedNode) {
+  if (props.selectID) {
     nodeDetail = (
       <div>
-        {stringify(selectedNode)}
+        { props.nodes[props.selectID].toString() }
         {/* 
         <h2>Node Details</h2>
         {stringify(mock_data.items[selectedNode.id])}
@@ -52,9 +43,10 @@ function FileExplorer() {
     );
   }
 
+  // TODO: remove temporary
   nodeDetail = (
     <div>
-      {stringify(state)}
+      {stringify(props)}
     </div>
   );
 
@@ -65,7 +57,7 @@ function FileExplorer() {
         <h3>Tree</h3>
         <hr />
           <TreeWrapper>
-            <Tree onSelect={(node) => handleSelect(node)} />
+            <Tree />
           </TreeWrapper>
       </div>
 
@@ -79,4 +71,10 @@ function FileExplorer() {
   );
 }
 
-export default FileExplorer;
+const mapStateToProps = (state /*, ownProps*/) => {
+  return {
+    selectID: state.selectID,
+    nodes: state.nodes,
+  };
+}
+export default connect(mapStateToProps)(FileExplorer);

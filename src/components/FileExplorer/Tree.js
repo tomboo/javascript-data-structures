@@ -16,8 +16,7 @@ import { selectNode, toggleNode } from "./store";
 function Tree(props) {
   // const [view, setView] = useImmer(buildView());
   console.log("Tree");
-  console.log("props", props);
-  // console.log('view', view);
+  console.log(props);
 
   function renderNode(node, level) {
     return (
@@ -25,16 +24,20 @@ function Tree(props) {
         key={node.id}
         node={node}
         level={level}
-        onSelect={props.selectNode(node.id)}
-        onToggle={props.toggleNode(node)}
+        onSelect={() => props.selectNode(node.id)}
+        onToggle={() => props.toggleNode(node.id)}
       />
     );
   }
 
+  // Pre-order traversal. Call renderNode() for each node.
   function traverse(tree, node, level = 0) {
     return (
       <div>
+        {/* Render node */}
         {renderNode(node, level)}
+
+        {/* Render children (recursive call) */}
         {node.isOpen &&
           _getChildNodes(tree, node).map(childNode =>
             traverse(tree, childNode, level + 1)
@@ -44,20 +47,28 @@ function Tree(props) {
   }
 
   const rootNodes = _getRootNodes(props.state);
-  return <div>{rootNodes.map(node => traverse(props.state, node))}</div>;
+  return (
+    <div>
+      {rootNodes.map(node => traverse(props.state, node))}
+    </div>
+  );
 }
 
+/*
 Tree.propTypes = {
   onSelect: PropTypes.func.isRequired
 };
+*/
 
-const mapStateToProps = state => ({
-  state: state // getVisibleTodos(state.todos, state.visibilityFilter)
-});
+const mapStateToProps = state => {
+  return {
+    state
+  };
+};
 
 const mapDispatchToProps = dispatch => ({
   selectNode: id => dispatch(selectNode(id)),
-  toggleNode: id => dispatch(toggleNode(id))
+  toggleNode: id => dispatch(toggleNode(id)),
 });
 
 export default connect(
