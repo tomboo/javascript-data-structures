@@ -3,8 +3,6 @@ import { connect } from "react-redux";
 // import values from "lodash/values";
 import PropTypes from "prop-types";
 import TreeNode from "./TreeNode";
-//import treeView from "../../tree"
-// import { stringify } from "../../utilities"
 import { _getRootNodes, _getChildNodes } from "../../store";
 import { selectNode, toggleNode } from "../../store";
 
@@ -31,7 +29,7 @@ function Tree(props) {
   // Pre-order traversal. Call renderNode() for each node.
   function traverse(tree, node, level = 0) {
     return (
-      <div>
+      <React.Fragment>
         {/* Render node */}
         {renderNode(node, level, node.id === tree.selectID)}
 
@@ -40,7 +38,7 @@ function Tree(props) {
           _getChildNodes(tree, node).map(childNode =>
             traverse(tree, childNode, level + 1)
           )}
-      </div>
+      </React.Fragment>
     );
   }
 

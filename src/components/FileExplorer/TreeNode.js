@@ -57,6 +57,7 @@ function TreeNode(props) {
           {getNodeLabel(node)}
         </button>
 
+        {/* Selection */}
         {selected && <span>*</span>}
       </StyledTreeNode>
     </React.Fragment>
