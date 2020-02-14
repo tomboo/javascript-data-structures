@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 // import values from "lodash/values";
 import PropTypes from "prop-types";
 import TreeNode from "./TreeNode";
-import { _getRootNodes, _getChildNodes } from "../../store";
+import { getRootNodes, getChildNodes } from "../../store";
 import { selectNode, toggleNode } from "../../store";
 
 // Tree Component
@@ -35,14 +35,14 @@ function Tree(props) {
 
         {/* Render children (recursive call) */}
         {node.isOpen &&
-          _getChildNodes(tree, node).map(childNode =>
+          getChildNodes(tree, node).map(childNode =>
             traverse(tree, childNode, level + 1)
           )}
       </React.Fragment>
     );
   }
 
-  const rootNodes = _getRootNodes(props.state);
+  const rootNodes = getRootNodes(props.state);
   return (
     <div>
       {rootNodes.map(node => traverse(props.state, node))}
@@ -57,10 +57,8 @@ Tree.propTypes = {
 */
 
 const mapStateToProps = state => {
-  return {
-    state
-  };
-};
+  return { state };
+}
 
 const mapDispatchToProps = dispatch => ({
   selectNode: id => dispatch(selectNode(id)),

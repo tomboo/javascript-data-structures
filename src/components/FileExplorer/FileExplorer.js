@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
-import styled from "styled-components";
 import Tree from "./Tree";
+import styled from "styled-components";
 
 
 const StyledFileExplorer = styled.div`
@@ -21,30 +21,15 @@ function FileExplorer(props) {
   console.log('FileExplorer');
   console.log(props);
 
-  //const initialState = _initialState();
-  //const [state, dispatch] = useImmerReducer(reducer, initialState);
-
   // TODO: Research util.inspect()
   let nodeDetail = <div>no selection</div>;
   if (props.selectID) {
     nodeDetail = (
       <div>
         { props.nodes[props.selectID].toString() }
-        {/* 
-        <h2>Node Details</h2>
-        {stringify(mock_data.items[selectedNode.id])}
-        */}
       </div>
     );
   }
-
-  /*
-  nodeDetail = (
-    <div>
-      {stringify(props)}
-    </div>
-  );
-  */
 
   return (
     <StyledFileExplorer>
@@ -59,7 +44,7 @@ function FileExplorer(props) {
 
       {/* Right pane */}
       <div>
-        <h3>Node Info</h3>
+        <h3>Node</h3>
         <hr />
         { nodeDetail }
       </div>

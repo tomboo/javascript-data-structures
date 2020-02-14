@@ -10,6 +10,8 @@ const ADD_CHILD = "ADD_CHILD";
 const SELECT_NODE = "SELECT";
 const TOGGLE_NODE = "TOGGLE";
 
+
+// ID generator
 let _nextID = 0;
 function nextID() {
   ++_nextID;
@@ -57,10 +59,19 @@ export function _initialState() {
     }
   };
 
+  let root0 = _addRoot(tree);
+  root0.name = "forceUpdate"
+
   let root = _addRoot(tree);
+  root.name = "root"
   root.isOpen = true;
   _addChild(tree, root);
   _addChild(tree, root);
+  let parent = _addChild(tree, root);
+  parent.isOpen = true;
+  _addChild(tree, parent);
+  _addChild(tree, parent);
+  
 
   return tree;
 }
@@ -72,10 +83,7 @@ function _getBase(tree) {
 
 //
 function _addRoot(tree) {
-  let root = _addChild(tree, _getBase(tree));
-  root.name = "root"; // TODO: not required
-  root.isRoot = true; // TODO: not required
-  //tree.nodes[root.id] = root;
+  const root = _addChild(tree, _getBase(tree));
   tree.selectID = root.id;
   return root;
 }
@@ -91,13 +99,13 @@ function _addChild(tree, parentNode) {
   return child;
 }
 
-//
-export function _getRootNodes(tree) {
-  return _getChildNodes(tree, _getBase(tree));
+// Selectors
+export function getRootNodes(tree) {
+  return getChildNodes(tree, _getBase(tree));
 }
 
 //
-export function _getChildNodes(tree, node) {
+export function getChildNodes(tree, node) {
   if (node._isLeaf()) return [];
   return node.children.map(id => tree.nodes[id]);
 }

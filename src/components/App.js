@@ -1,7 +1,7 @@
 import React from "react";
 import { Provider } from 'react-redux'
-import { generateStore } from "../store"
 import FileExplorer from "./FileExplorer/FileExplorer";
+import { generateStore } from "../store"
 import "./styles.css";
 
 // App Component
