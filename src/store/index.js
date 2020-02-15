@@ -3,12 +3,15 @@ import thunk from 'redux-thunk'
 import { createLogger } from 'redux-logger'
 import produce from 'immer'
 import { stringify } from "../utilities";
+import values from "lodash/values";
 
-const CLEAR_LIST = "CLEAR_LIST";
 const ADD_ROOT = "ADD_ROOT";
 const ADD_CHILD = "ADD_CHILD";
-const SELECT_NODE = "SELECT";
-const TOGGLE_NODE = "TOGGLE";
+const SELECT_NODE = "SELECT_NODE";
+const TOGGLE_NODE = "TOGGLE_NODE";
+const EXPAND_LIST = "EXPAND_LIST";
+const COLLAPSE_LIST = "COLLAPSE_LIST";
+const CLEAR_LIST = "CLEAR_LIST";
 
 
 // ID generator
@@ -24,25 +27,40 @@ class Node {
   constructor(name) {
     this.id = nextID();
     this.name = name ? name : this.id;
+    this._isOpen = false;
   }
 
-  //
   toString() {
     return stringify(this);
   }
 
-  //
-  _isLeaf() {
-    return this._getChildCount() === 0;
-  }
-
-  //
-  _getChildCount() {
+  getChildCount() {
     if (this.children) {
       return this.children.length;
-    } else {
+    }
+    else {
       return 0;
     }
+  }
+
+  isLeaf() {
+    return this.getChildCount() === 0;
+  }
+
+  isOpen() {
+    return this._isOpen;
+  }
+
+  open() {
+    this._isOpen = true;
+  }
+
+  close() {
+    this._isOpen = false;
+  }
+
+  toggle() {
+    this._isOpen = !this._isOpen;
   }
 }
 
@@ -50,7 +68,6 @@ class Node {
 // Tree Class
 export function _initialState() {
   const baseNode = new Node("base");
-
   const tree = {
     baseID: baseNode.id,
     selectID: baseNode.id,
@@ -58,21 +75,6 @@ export function _initialState() {
       [baseNode.id]: baseNode
     }
   };
-
-  let root0 = _addRoot(tree);
-  root0.name = "forceUpdate"
-
-  let root = _addRoot(tree);
-  root.name = "root"
-  root.isOpen = true;
-  _addChild(tree, root);
-  _addChild(tree, root);
-  let parent = _addChild(tree, root);
-  parent.isOpen = true;
-  _addChild(tree, parent);
-  _addChild(tree, parent);
-  
-
   return tree;
 }
 
@@ -83,20 +85,35 @@ function _getBase(tree) {
 
 //
 function _addRoot(tree) {
-  const root = _addChild(tree, _getBase(tree));
-  tree.selectID = root.id;
-  return root;
+  return _addChild(tree, _getBase(tree));
 }
 
 //
-function _addChild(tree, parentNode) {
+function _addChild(tree, node) {
   const child = new Node();
   tree.nodes[child.id] = child;
-  if (!parentNode.children) {
-    parentNode.children = [];
+  if (!node.children) {
+    node.children = [];
   }
-  parentNode.children.push(child.id);
+  node.children.push(child.id);
   return child;
+}
+
+//
+function _select(tree, nodeID) {
+  tree.selectID = nodeID;
+}
+
+function _open(tree, nodeID) {
+  tree.nodes[nodeID].open();
+}
+
+function _close(tree, nodeID) {
+  tree.nodes[nodeID].close();
+}
+
+function _toggle(tree, nodeID) {
+  tree.nodes[nodeID].toggle();
 }
 
 // Selectors
@@ -106,7 +123,7 @@ export function getRootNodes(tree) {
 
 //
 export function getChildNodes(tree, node) {
-  if (node._isLeaf()) return [];
+  if (node.isLeaf()) return [];
   return node.children.map(id => tree.nodes[id]);
 }
 
@@ -120,15 +137,14 @@ export function addRoot() {
   };
 }
 
-export function addChild(parentID) {
+export function addChild(nodeID) {
   return {
     type: ADD_CHILD,
-    parentID
+    nodeID
   };
 }
 
 export function selectNode(nodeID) {
-  console.log('selectNode', nodeID);
   return {
     type: SELECT_NODE,
     nodeID
@@ -136,12 +152,30 @@ export function selectNode(nodeID) {
 }
 
 export function toggleNode(nodeID) {
-  console.log('toggleNode', nodeID);
   return {
     type: TOGGLE_NODE,
     nodeID
   };
 }
+
+export function expandList() {
+  return {
+    type: EXPAND_LIST
+  };
+}
+
+export function collapseList() {
+  return {
+    type: COLLAPSE_LIST
+  };
+}
+
+export function clearList() {
+  return {
+    type: CLEAR_LIST
+  };
+}
+
 
 //
 // Reducers
@@ -149,28 +183,35 @@ export function toggleNode(nodeID) {
 const reducer = (state = _initialState(), action) => 
   produce(state, draft => {
     switch (action.type) {    
-      case CLEAR_LIST:
-        draft = _initialState();
-        break;
       case ADD_ROOT:
-        _addRoot(draft);
+        const root = _addRoot(draft);
+        _select(draft, root.id);
         break;
       case ADD_CHILD:
-        _addChild(draft);
+        _addChild(draft, draft.nodes[action.nodeID]);
+        _open(draft, action.nodeID);
+        _select(draft, action.nodeID);
         break;
       case SELECT_NODE:
         // TODO: assert nodeID is a valid id
         // TODO: seems inefficient to copy entire tree to set selection
         // TODO: consider separate state for selectID
-        draft.selectID = action.nodeID;
+        _select(draft, action.nodeID);
         break;
       case TOGGLE_NODE:
-        console.log(draft.nodes[action.nodeID].isOpen);
-        draft.nodes[action.nodeID].isOpen = !draft.nodes[action.nodeID].isOpen;
-        draft.selectID = action.nodeID;
-        console.log(draft.nodes[action.nodeID].isOpen);
+        _toggle(draft, action.nodeID);
+        _select(draft, action.nodeID);
         break;
+      case EXPAND_LIST:
+        values(draft.nodes).map(node => _open(draft, node.id));
+        break;
+      case COLLAPSE_LIST:
+        values(draft.nodes).map(node => _close(draft, node.id));
+        _select(draft, _getBase(draft).id);
+        break;
+      case CLEAR_LIST:
       default:
+        draft = _initialState();
         break;
     }
     return draft;

@@ -34,7 +34,7 @@ function Tree(props) {
         {renderNode(node, level, node.id === tree.selectID)}
 
         {/* Render children (recursive call) */}
-        {node.isOpen &&
+        {node.isOpen() &&
           getChildNodes(tree, node).map(childNode =>
             traverse(tree, childNode, level + 1)
           )}
