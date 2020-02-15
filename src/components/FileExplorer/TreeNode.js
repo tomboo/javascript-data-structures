@@ -49,13 +49,16 @@ function TreeNode(props) {
         {/* Node open/closed icon (clickable) */}
         <button onClick={onToggle}>
           {level}
-          {node.isOpen ? <FaChevronDown /> : <FaChevronRight />}
+          {node.isOpen() ? <FaChevronDown /> : <FaChevronRight />}
         </button>
 
         {/* Node Label (selectable) */}
         <button onClick={onSelect}>
           {getNodeLabel(node)}
         </button>
+
+        {/* Child Count */}
+        <span>({node.getChildCount()})</span>
 
         {/* Selection */}
         {selected && <span>*</span>}

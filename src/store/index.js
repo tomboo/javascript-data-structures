@@ -5,6 +5,7 @@ import produce from 'immer'
 import { stringify } from "../utilities";
 import values from "lodash/values";
 
+// Action Types
 const ADD_ROOT = "ADD_ROOT";
 const ADD_CHILD = "ADD_CHILD";
 const SELECT_NODE = "SELECT_NODE";
